@@ -1,0 +1,23 @@
+# Python
+venv311/
+__pycache__/
+*.pyc
+
+# Backend data
+backend/chroma_db/
+backend/data/
+*.pdf
+
+# Env
+.env
+
+# Logs
+*.log
+
+# Node (frontend)
+node_modules/
+dist/
+
+# OS files
+.DS_Store
+Thumbs.db
