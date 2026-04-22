@@ -1,5 +1,6 @@
 import logging
 import shutil
+import os
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -61,4 +62,8 @@ async def clear():
     return {"message": "memory cleared"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host=settings.HOST, port=settings.PORT, reload=True)
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 10000))
+    )
