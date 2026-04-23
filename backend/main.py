@@ -25,19 +25,22 @@ app.add_middleware(
 
 rag_pipeline = None
 
-@app.on_event("startup")
-async def startup():
+def get_pipeline():
     global rag_pipeline
-    try:
+    if rag_pipeline is None:
         rag_pipeline = RAGPipeline()
-    except Exception as e:
-        logger.error(e)
-        rag_pipeline = None
+    return rag_pipeline
+
+
+# ✅ HEALTH CHECK (VERY IMPORTANT)
+@app.get("/")
+async def root():
+    return {"status": "ok"}
+
 
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
-    if not rag_pipeline:
-        raise HTTPException(500, "Pipeline not initialized")
+    pipeline = get_pipeline()
 
     path = settings.DATA_DIR / sanitize_filename(file.filename)
 
@@ -48,18 +51,19 @@ async def upload(file: UploadFile = File(...)):
     if not valid["valid"]:
         raise HTTPException(400, valid["error"])
 
-    return rag_pipeline.process_pdf(path)
+    return pipeline.process_pdf(path)
+
 
 @app.get("/ask")
 async def ask(query: str = Query(...)):
-    if not rag_pipeline:
-        raise HTTPException(500, "Pipeline not initialized")
+    pipeline = get_pipeline()
+    return pipeline.query(query)
 
-    return rag_pipeline.query(query)
 
 @app.post("/clear")
 async def clear():
     return {"message": "memory cleared"}
+
 
 if __name__ == "__main__":
     uvicorn.run(
