@@ -4,7 +4,7 @@ import FileUpload from './components/FileUpload';
 import { FileText, Trash2, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = "https://ragchatbot-gpuf.onrender.com";
 
 function App() {
   const [messages, setMessages] = useState([]);
