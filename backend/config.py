@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     DATA_DIR: Path = BASE_DIR / "data"
     CHROMA_DB_DIR: Path = BASE_DIR / "chroma_db"
 
-    EMBEDDING_MODEL = "sentence-transformers/paraphrase-MiniLM-L3-v2"
+    EMBEDDING_MODEL: str = "sentence-transformers/paraphrase-MiniLM-L3-v2"
     LLM_MODEL: str = "llama-3.1-8b-instant"
 
     # 🔥 Improved chunking
