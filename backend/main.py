@@ -28,7 +28,11 @@ rag_pipeline = None
 def get_pipeline():
     global rag_pipeline
     if rag_pipeline is None:
-        rag_pipeline = RAGPipeline()
+        try:
+            rag_pipeline = RAGPipeline()
+        except Exception as e:
+            print("Pipeline init error:", e)
+            return None
     return rag_pipeline
 
 
@@ -42,6 +46,9 @@ async def root():
 async def upload(file: UploadFile = File(...)):
     pipeline = get_pipeline()
 
+    if pipeline is None:
+        raise HTTPException(500, "Model not ready")
+
     path = settings.DATA_DIR / sanitize_filename(file.filename)
 
     with open(path, "wb") as f:
@@ -53,10 +60,17 @@ async def upload(file: UploadFile = File(...)):
 
     return pipeline.process_pdf(path)
 
+@app.get("/ping")
+async def ping():
+    return {"message": "alive"}
 
 @app.get("/ask")
 async def ask(query: str = Query(...)):
     pipeline = get_pipeline()
+
+    if pipeline is None:
+        raise HTTPException(500, "Model failed to initialize. Try again later.")
+
     return pipeline.query(query)
 
 
